@@ -7,7 +7,7 @@ docker rm ghc-cross
 # stole ghc-musl from https://github.com/nilcons/ghc-musl, thanks!
 docker build -t nizq/alpine-ghc-build .
 
-# docker run -it --name alpine-build -v `pwd`/linux:/src/linux-`uname -r`  -v /lib/modules/`uname -r`:/lib/modules/`uname -r` -v /usr/local:/usr/local -v `pwd`:/source nizq/alpine-build build-pfq.sh
-
 git clone https://github.com/coreos/linux.git
 git clone https://github.com/pfq/PFQ.git
+
+docker run -it --rm -v `pwd`:/source nizq/alpine-build /source/build-pfq.sh

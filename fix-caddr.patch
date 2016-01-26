@@ -1,0 +1,20 @@
+diff -crB pfq-orig/user/tool/pfq-gen.cpp pfq/user/tool/pfq-gen.cpp
+*** pfq-orig/user/tool/pfq-gen.cpp	2016-01-26 20:49:58.722919165 +0800
+--- pfq/user/tool/pfq-gen.cpp	2016-01-26 20:50:43.507246314 +0800
+***************
+*** 60,66 ****
+          ecmd->cmd = ETHTOOL_GSET;
+  
+          struct ifreq ifreq_io;
+!         ifreq_io.ifr_data = reinterpret_cast<__caddr_t>(ecmd.get());
+          strncpy(ifreq_io.ifr_name, ifname, IFNAMSIZ);
+  
+          if (ioctl(sock, SIOCETHTOOL, &ifreq_io) == -1) {
+--- 60,66 ----
+          ecmd->cmd = ETHTOOL_GSET;
+  
+          struct ifreq ifreq_io;
+!         ifreq_io.ifr_data = reinterpret_cast<char *>(ecmd.get());
+          strncpy(ifreq_io.ifr_name, ifname, IFNAMSIZ);
+  
+          if (ioctl(sock, SIOCETHTOOL, &ifreq_io) == -1) {

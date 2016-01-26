@@ -23,6 +23,7 @@ cabal update
 cabal install alex happy
 
 cd $PFQ
+patch -p1 < ../fix-caddr.patch
 cabal install --only-dep --force-reinstalls pfq-framework.cabal
 
 cd $PFQ/kernel
