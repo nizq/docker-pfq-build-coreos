@@ -25,6 +25,7 @@ git checkout v4.2.2-coreos
 
 zcat /proc/config.gz > .config
 make modules_prepare
+sed -i "s/4.2.2+/${KERNEL_VERSION}/g" include/generated/utsrelease.h
 
 cabal update
 cabal install alex happy
@@ -34,11 +35,10 @@ patch -p1 < $SOURCE/fix-caddr.patch
 cabal install --only-dep --force-reinstalls pfq-framework.cabal
 
 cd $PFQ/kernel
-INSTDIR=$FINAL/kmod/$KERNELVERSION
+INSTDIR=$FINAL/kmod/$KERNEL_VERSION
 mkdir -p $INSTDIR
 make -C $LINUX M=$PWD modules
 cp  pfq.ko $INSTDIR
-gzip -c pfq.ko | base64 > $INSTDIR/pfq.ko.gz
 mkdir -p $PREFIX/include/pfq/
 cp -r linux $PREFIX/include/
 cp Module.symvers $INSTDIR
