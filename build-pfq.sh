@@ -11,6 +11,7 @@ PREFIX=/usr/local
 KERNEL_VERSION=`uname -r`
 TCPDUMP_VERSION=4.7.4
 PFQ_VERSION=5.22.11
+BRO_VERSION=2.4.1
 
 export LANG=C.UTF-8
 
@@ -29,7 +30,7 @@ cabal update
 cabal install alex happy
 
 cd $PFQ
-patch -p1 < ../fix-caddr.patch
+patch -p1 < $SOURCE/fix-caddr.patch
 cabal install --only-dep --force-reinstalls pfq-framework.cabal
 
 cd $PFQ/kernel
@@ -95,3 +96,25 @@ tar zxvf tcpdump-${TCPDUMP_VERSION}.tar.gz
 cd tcpdump-${TCPDUMP_VERSION}
 ./configure && make && make install
 tar Jcvf $FINAL/tcpdump-bin-${TCPDUMP_VERSION}.tar.xz /usr/local/sbin/tcpdump
+
+# build bro
+cd $BUILD
+apk add geoip-dev fts fts-dev python-dev openssl-dev
+wget wget https://www.bro.org/downloads/release/bro-${BRO_VERSION}.tar.gz
+tar zxvf bro-${BRO_VERSION}.tar.gz
+cd bro-${BRO_VERSION}
+patch -p1 < $SOURCE/bro-musl.patch
+cd aux/binpac
+patch -p1 < $SOURCE/binpac-musl.patch
+cd ../../
+cp $SOURCE/FindFTS.cmake cmake
+./configure --prefix=$PREFIX \
+            --disable-broctl \
+            --disable-broccoli \
+            --disable-auxtools \
+            --disable-debug
+make
+make DESTDIR=$DIST/bro/ install
+cd $DIST/bro
+strip -s usr/local/bin/bro
+tar Jcvf $FINAL/bro-bin-${BRO_VERSION}.tar.xz usr
