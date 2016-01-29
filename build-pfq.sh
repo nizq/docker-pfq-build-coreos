@@ -79,7 +79,7 @@ tar Jcvf $FINAL/pfq-tools-${PFQ_VERSION}.tar.xz $PREFIX/bin
 # libpcap
 cd $USER/libpcap/libpcap-1.7.4/
 mkdir -p $PREFIX/include/linux
-./configure --enable-pfq --prefix=$PREFIX
+CFLAGS=-I/usr/local/include ./configure --enable-pfq --prefix=$PREFIX
 make && make install
 make DESTDIR=$DIST/libpcap install
 cd $DIST/libpcap
