@@ -11,3 +11,7 @@ git clone https://github.com/coreos/linux.git
 git clone https://github.com/pfq/PFQ.git
 
 docker run -it --rm -v `pwd`:/source nizq/alpine-build /source/build-pfq.sh
+
+cp Dockerfile.final final/Dockerfile
+cd final
+docker build -t nizq/pfq .

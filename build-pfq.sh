@@ -51,11 +51,15 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .
 make && make install
 mkdir -p $DIST/libpfq
 make DESTDIR=$DIST/libpfq install
+cd $DIST/libpfq
+tar Jcvf $FINAL/libpfq-${PFQ_VERSION}.tar.xz usr
 
 cd $USER/C++/pfq
 make install
 mkdir -p $DIST/libpfq++
 make INSTDIR=$DIST/libpfq++/usr/local/include/pfq
+cd $DIST/libpfq++
+tar Jcvf $FINAL/libpfq++-dev.tar.xz usr
 
 for DIR in "Haskell" "irq-affinity" "pfq-load" "pfqd" "pfq-omatic" "pfq-stress"
 do
@@ -67,27 +71,19 @@ do
     cabal install --prefix=$PREFIX
 done
 
-# INCLUDE_DIRECTORIES
 cd $USER/tool
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .
 make && make install
+tar Jcvf $FINAL/pfq-tools-${PFQ_VERSION}.tar.xz $PREFIX/bin
 
+# libpcap
 cd $USER/libpcap/libpcap-1.7.4/
 mkdir -p $PREFIX/include/linux
 ./configure --enable-pfq --prefix=$PREFIX
 make && make install
 make DESTDIR=$DIST/libpcap install
-
-# make pfq-utils package
-tar Jcvf $FINAL/pfq-tools-${PFQ_VERSION}.tar.xz $PREFIX/bin
-
-# make libpfq package
-cd $DIST/libpfq
-tar Jcvf $FINAL/libpfq-${PFQ_VERSION}.tar.xz usr
-
-# make c++ header package
-cd $DIST/libpfq++
-tar Jcvf $FINAL/libpfq++-dev.tar.xz usr
+cd $DIST/libpcap
+tar Jcvf $FINAL/libpcap-1.7.4.tar.xz usr --exclude=/usr/local/share
 
 # build tcpdump
 cd $BUILD

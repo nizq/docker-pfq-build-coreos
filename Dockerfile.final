@@ -1,0 +1,13 @@
+FROM alpine:3.3
+
+MAINTAINER nizq <ni.zhiqiang@gmail.com>
+
+RUN echo "===> Adding dependency..." \
+    && apk add --update geoip gmp libgcc libstdc++ openssl zlib \
+    && rm -rf /var/cache/apk/*
+
+ADD libpfq-*.tar.xz /
+ADD pfq-tools-*.tar.xz /
+ADD libpcap-*.tar.xz /
+ADD tcpdump-bin-*.tar.xz /
+ADD bro-bin-*.tar.xz /
