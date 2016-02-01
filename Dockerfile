@@ -14,5 +14,6 @@ RUN echo "===> Installing dev packages..." \
     && export LANG=C.UTF-8 \
     && cabal install alex happy
 
+ENV LANG=C.UTF-8
 VOLUME ["/source"]
 WORKDIR /source
