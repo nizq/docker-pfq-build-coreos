@@ -1,50 +1,18 @@
-FROM alpine:latest
+FROM ubuntu:14.04
 
-COPY repositories /etc/apk/
-RUN apk add --update curl xz alpine-sdk perl gmp-dev file gmp openssh openssl \
-                     zlib-dev strace vim less jq ncurses-dev bash autoconf \
-                     gcc make bc git cmake g++ flex bison
-
-WORKDIR /build
-COPY ghc-7.8.4-x86_64-unknown-linux-musl.tar.xz build.mk fix-execvpe-signature-ghc-7.8.4.patch /build/
-RUN wget https://nixos.org/releases/patchelf/patchelf-0.8/patchelf-0.8.tar.bz2 \
-    && tar xfj patchelf-0.8.tar.bz2 \
-    && cd patchelf-0.8 \
-    && ./configure && make install \
-    && cd .. \
-    && rm -rf patchelf* \
-    && tar -xvJ -C / -f /build/ghc-7.8.4-x86_64-unknown-linux-musl.tar.xz \
-    && mkdir /build/ghc \
-    && cd /build/ghc \
-    && wget https://www.haskell.org/ghc/dist/7.8.4/ghc-7.8.4-src.tar.bz2 \
-    && tar xvfj ghc-7.8.4-src.tar.bz2
-
-WORKDIR /build/ghc/ghc-7.8.4
-ENV OLDPATH=$PATH PATH=/opt/ghc-cross/bin:$PATH
-RUN cp /build/build.mk mk/build.mk \
-    && patch -p1 < /build/fix-execvpe-signature-ghc-7.8.4.patch \
-    && ./configure --prefix=/opt/ghc \
-    && sed -i 's,chmod,sed -i s/__gnu_linux__/1/ libffi/build/src/closures.c \&\& chmod,' libffi/ghc.mk \
-    && make -j8 \
-    && make binary-dist \
-    && cd /build \
-    && mv ghc/ghc-7.8.4/ghc-7.8.4-x86_64-unknown-linux.tar.bz2 . \
-    && rm -rf ghc /opt/ghc-cross \
-    && tar xvfj ghc-7.8.4-x86_64-unknown-linux.tar.bz2 \
-    && cd ghc-7.8.4 \
-    && ./configure --prefix=/opt/ghc \
-    && sed -i '/C\ compiler\ link/{ s/""/"--no-pie"/ }' settings \
-    && make install \
-    && cd /build \
-    && rm -rf ghc-7.8.4 ghc-7.8.4-x86_64-unknown-linux.tar.bz2
-
-WORKDIR /build
-ENV PATH=/opt/ghc/bin:/root/.cabal/bin:$OLDPATH
-RUN wget https://hackage.haskell.org/package/cabal-install-1.22.4.0/cabal-install-1.22.4.0.tar.gz \
-    && tar xvfz cabal-install-1.22.4.0.tar.gz \
-    && cd cabal-install-1.22.4.0 \
-    && EXTRA_CONFIGURE_OPTS=--disable-library-profiling ./bootstrap.sh \
-    && rm -rf /root/.ghc /build /root/.cabal/lib /root/.cabal/share
+RUN echo "===> Installing dev packages..." \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository -y ppa:hvr/ghc \
+    && apt-get update \
+    && apt-get install -y gcc cmake make bc git cmake g++ flex bison wget strace \
+                          gdb cabal-install-1.20 ghc-7.8.4 \
+    && echo "export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH" >> ~/.bashrc \
+    && export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH \
+    && cabal update \
+    && export LANG=C.UTF-8 \
+    && cabal install alex happy
 
 VOLUME ["/source"]
 WORKDIR /source
