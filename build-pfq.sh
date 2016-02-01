@@ -25,7 +25,7 @@ git checkout v4.2.2-coreos
 
 zcat /proc/config.gz > .config
 make modules_prepare
-sed -i "s/4.2.2+/${KERNEL_VERSION}/" include/generated/utsrelease.h
+sed -i "s/4.2.2+/${KERNEL_VERSION}/g" include/generated/utsrelease.h
 
 cabal update
 cabal install alex happy
