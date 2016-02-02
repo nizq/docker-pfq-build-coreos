@@ -6,7 +6,7 @@ LINUX=$SOURCE/linux
 PFQ=$SOURCE/PFQ
 FINAL=$SOURCE/final
 DIST=$SOURCE/dist
-PREFIX=/opt/pfq
+PREFIX=/usr/local
 
 KERNEL_VERSION=`uname -r`
 HEADER_VERSION=4.2.0-25
@@ -20,6 +20,11 @@ mkdir -p $BUILD
 mkdir -p $FINAL
 rm -rf $DIST
 mkdir -p $DIST
+
+echo "export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH" >> ~/.bashrc 
+export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH 
+cabal update 
+cabal install alex happy
 
 cd $LINUX
 git checkout v`uname -r|sed 's/-r[0-9]$//'`
@@ -50,11 +55,9 @@ make && make install
 for DIR in "Haskell" "irq-affinity" "pfq-load" "pfqd" "pfq-omatic" "pfq-stress"
 do
     cd $USER/$DIR
-    cabal configure --prefix=$PREFIX \
-                    --extra-include-dirs=/usr/local/include \
-                    --extra-lib-dirs=/usr/local/lib
-    cabal build -v
-    cabal install --prefix=$PREFIX
+    cabal install --prefix=$PREFIX \
+          --extra-include-dirs=$PREFIX/include \
+          --extra-lib-dirs=$PREFIX/lib
 done
 
 cd $USER/tool
@@ -68,22 +71,20 @@ make && make install
 
 # build tcpdump
 cd $BUILD
-wget http://www.tcpdump.org/release/tcpdump-${TCPDUMP_VERSION}.tar.gz
+wget -c http://www.tcpdump.org/release/tcpdump-${TCPDUMP_VERSION}.tar.gz
 tar zxvf tcpdump-${TCPDUMP_VERSION}.tar.gz
 cd tcpdump-${TCPDUMP_VERSION}
 ./configure && make && make install
 
 # build bro
 cd $BUILD
-apt-get install openssl-dev python-dev
-wget wget https://www.bro.org/downloads/release/bro-${BRO_VERSION}.tar.gz
+wget -c https://www.bro.org/downloads/release/bro-${BRO_VERSION}.tar.gz
 tar zxvf bro-${BRO_VERSION}.tar.gz
 cd bro-${BRO_VERSION}
 ./configure --prefix=$PREFIX \
             --disable-broctl \
             --disable-broccoli \
-            --disable-auxtools \
-            --disable-debug
+            --disable-auxtools
 make
 make install
 strip -s $PREFIX/bin/bro
