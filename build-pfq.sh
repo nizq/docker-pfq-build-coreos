@@ -40,7 +40,7 @@ mkdir -p $PREFIX/include/pfq/
 cp -r linux $PREFIX/include/
 cp Module.symvers $INSTDIR
 
-apt-get install linux-headers-${HEADER_VERSION}-generic
+apt-get install -y linux-headers-${HEADER_VERSION}-generic
 
 USER=$PFQ/user
 cd $USER/C
