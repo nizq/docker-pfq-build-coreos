@@ -1,3 +1,6 @@
 [submodule "linux"]
 	path = linux
 	url = https://github.com/coreos/linux.git
+[submodule "PFQ"]
+	path = PFQ
+	url = https://github.com/pfq/PFQ.git

@@ -22,7 +22,7 @@ rm -rf $DIST
 mkdir -p $DIST
 
 cd $LINUX
-git checkout `uname -r|sed 's/-r[0-9]$//'`
+git checkout v`uname -r|sed 's/-r[0-9]$//'`
 
 zcat /proc/config.gz > .config
 make modules_prepare
