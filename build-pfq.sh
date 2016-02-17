@@ -66,8 +66,8 @@ if  [[ $mode = "admin" ]]; then
 
     # use default PFQDaemon.hs to compile pfqd
     cd $USER/pfqd
-    rm -f src/PFQDaemon.hs
-    cp $SOURCE/PFQDaemon.hs src
+    #rm -f src/PFQDaemon.hs
+    #cp $SOURCE/PFQDaemon.hs src
     cabal install --prefix=$PREFIX \
           --extra-include-dirs=$PREFIX/include \
           --extra-lib-dirs=$PREFIX/lib

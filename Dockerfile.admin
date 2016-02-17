@@ -16,4 +16,7 @@ COPY cabal /root/.cabal
 COPY dist /usr/local
 COPY PFQDaemon.hs /root/.pfqd/
 
+ENV PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH
+RUN ldconfig
+
 VOLUME ["/etc/pfqd"]
